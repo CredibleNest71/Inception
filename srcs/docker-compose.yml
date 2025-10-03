@@ -1,0 +1,67 @@
+version: "3.8"
+
+services: 
+  db:
+    #image: mariadb:10.5
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root_pass_42
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppassword
+    volumes:
+      - db_data:/var/lib/mysql 
+    networks: 
+      - webnet
+
+  wordpress:
+    build: #./requirements/wordpress
+      context: ./requirements/wordpress
+      dockerfile: MyOwn.Dockerfile
+    #image: wordpress
+    ports:
+      - "9000:9000"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppassword
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep php-fpm"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - webnet
+
+  nginx:
+    #image: nginx:latest
+    build: ./requirements/nginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes: 
+      - ./requirements/nginx/conf:/etc/nginx/conf.d
+      - wordpress_data:/var/www/html:ro 
+    depends_on:
+      - wordpress
+      # wordpress:
+        # condition: service_healthy
+    networks:
+      - webnet
+
+volumes: 
+  wordpress_data: 
+  db_data: 
+
+networks:
+  webnet:
