@@ -1,31 +1,38 @@
 #!/bin/bash
 set -e
 
+# Ensure target directory exists
+mkdir -p /var/www/html
+cd /var/www/html
+
+# If WordPress is not already downloaded, fetch it
 if [ ! -f wp-config.php ]; then
-  wp config create \
-    --dbname="$WORDPRESS_DB_NAME" \
-    --dbuser="$WORDPRESS_DB_USER" \
-    --dbpass="$WORDPRESS_DB_PASSWORD" \
-    --dbhost="$WORDPRESS_DB_HOST" \
-    --allow-root
+    echo "Downloading WordPress core..."
+    wp core download --allow-root
+
+    echo "Creating wp-config.php..."
+    wp config create \
+        --allow-root \
+        --dbname="$MYSQL_DATABASE" \
+        --dbuser="$MYSQL_USER" \
+        --dbpass="$MYSQL_PASSWORD" \
+        --dbhost="mariadb:3306"
+
+    echo "Installing WordPress..."
+    wp core install \
+        --allow-root \
+        --url="https://$DOMAIN_NAME" \
+        --title="$WP_TITLE" \
+        --admin_user="$WP_ADMIN_USER" \
+        --admin_password="$WP_ADMIN_PASSWORD" \
+        --admin_email="$WP_ADMIN_EMAIL"
+
+    echo "Creating additional user..."
+    wp user create "$WP_USER" "$WP_USER_EMAIL" \
+        --allow-root \
+        --user_pass="$WP_USER_PASSWORD"
 fi
 
-until wp db check --allow-root > /dev/null 2>&1; do
-  echo "⌛ MariaDB not ready yet..."
-  sleep 2
-done
+# Start PHP-FPM in foreground (Docker main process)
+php-fpm7.4 -F
 
-if ! wp core is-installed --allow-root; then
-  wp core install \
-    --url="https://mresch.42.fr" \
-    --title="Inception Blog" \
-    --admin_user="admin" \
-    --admin_password="adminpass" \
-    --admin_email="admin@mresch.42.fr" \
-    --allow-root
-fi
-
-
-
-php-fpm7.3 -F
-exec php-fpm7.3 -F
