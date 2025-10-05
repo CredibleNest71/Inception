@@ -49,7 +49,7 @@ services:
       - inception
 
 volumes:
-  wordpress:
+  wordpress_data:
     driver: local
     driver_opts:
       type: none
