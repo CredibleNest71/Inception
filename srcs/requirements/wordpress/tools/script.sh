@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-# Ensure target directory exists
-mkdir -p /var/www/html
-cd /var/www/html
-
 # If WordPress is not already downloaded, fetch it
 if [ ! -f wp-config.php ]; then
     echo "Downloading WordPress core..."

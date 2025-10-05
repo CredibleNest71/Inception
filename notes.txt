@@ -1,0 +1,22 @@
+${VAR:-default} # sets default
+${VAR:?error} # throws error
+
+volumes brauchen lokale folder auf der hostmachine 
+    driver: local
+    etc ... 
+    make fclean soll löschen
+    docker compose down rmi (remove images)
+
+
+in /etc/hosts ein alias für mresch.42.fr erstellen 
+
+set missing variables
+
+mariadb basics:
+
+login: mariadb -u <username> -p
+
+SHOW DATABASES;
+USE <db_name>
+SHOW TABLES;
+SELECT * FROM <table_name>

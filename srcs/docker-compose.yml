@@ -3,16 +3,14 @@
 services: 
   db:
     #image: mariadb:10.5
-    build:
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
-    container_name:  mariadb
-    restart: always
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: unless-stopped
     env_file: .env
     volumes:
       - db_data:/var/lib/mysql 
     networks: 
-      - webnet
+      - inception
 
   wordpress:
     build: ./requirements/wordpress
@@ -20,9 +18,7 @@ services:
       #dockerfile: MyOwn.Dockerfile
     #image: wordpress
     container_name: wordpress
-    ports:
-      - "9000:9000"
-    restart: always
+    restart: unless-stopped
     env_file: .env 
     depends_on:
       - db
@@ -34,12 +30,12 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     networks:
-      - webnet
+      - inception
 
   nginx:
     #image: nginx:latest
     build: ./requirements/nginx
-    restart: always
+    restart: unless-stopped
     ports:
       - "443:443"
     volumes: 
@@ -50,11 +46,12 @@ services:
       # wordpress:
         # condition: service_healthy
     networks:
-      - webnet
+      - inception
 
 volumes: 
   wordpress_data: 
   db_data: 
 
 networks:
-  webnet:
+  inception:
+    name: inception
