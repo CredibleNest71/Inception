@@ -10,7 +10,10 @@ volumes brauchen lokale folder auf der hostmachine
 
 in /etc/hosts ein alias für mresch.42.fr erstellen 
 
+
 set missing variables
+
+
 
 mariadb basics:
 
