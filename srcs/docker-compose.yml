@@ -14,9 +14,6 @@ services:
 
   wordpress:
     build: ./requirements/wordpress
-      #context: ./requirements/wordpress
-      #dockerfile: MyOwn.Dockerfile
-    #image: wordpress
     container_name: wordpress
     restart: unless-stopped
     env_file: .env 
@@ -35,6 +32,7 @@ services:
   nginx:
     #image: nginx:latest
     build: ./requirements/nginx
+    container_name: nginx
     restart: unless-stopped
     ports:
       - "443:443"
@@ -42,11 +40,15 @@ services:
       - ./requirements/nginx/conf:/etc/nginx/conf.d
       - wordpress_data:/var/www/html:ro 
     depends_on:
-      - wordpress
-      # wordpress:
-        # condition: service_healthy
+      wordpress:
+        condition: service_healthy
+    secrets:
+      - selfsigned.crt
+      - selfsigned.key
     networks:
       - inception
+
+
 
 volumes:
   wordpress_data:
@@ -65,3 +67,11 @@ volumes:
 networks:
   inception:
     name: inception
+
+
+
+secrets:
+  selfsigned.crt:
+    file: ${NGINX_SSL_CRT_FILE:?error}
+  selfsigned.key:
+    file: ${NGINX_SSL_KEY_FILE:?error}
