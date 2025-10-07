@@ -64,14 +64,14 @@ volumes:
       o: bind
       device: ${MARIADB_VOLUME:?error}
 
-networks:
-  inception:
-    name: inception
-
-
-
 secrets:
   selfsigned.crt:
     file: ${NGINX_SSL_CRT_FILE:?error}
   selfsigned.key:
     file: ${NGINX_SSL_KEY_FILE:?error}
+
+networks:
+  inception:
+    name: inception
+
+
