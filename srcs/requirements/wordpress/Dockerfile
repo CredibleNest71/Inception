@@ -8,7 +8,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     curl \
     vim \
     sendmail && \
-    sed -i -e 's/listen =.*/listen = 9000/g' /etc/php/7.4/fpm/pool.d/www.conf && \
+    sed -i -e 's/listen =.*/listen = 0.0.0.0:9000/g' /etc/php/7.4/fpm/pool.d/www.conf && \
     mkdir -p /run/php
     
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
