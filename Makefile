@@ -8,8 +8,8 @@ all: init
 
 .PHONY: init
 init:
-	mkdir -p ${WORDPRESS_VOLUME}
-	mkdir -p ${MARIADB_VOLUME}
+	sudo mkdir -p ${WORDPRESS_VOLUME}
+	sudo mkdir -p ${MARIADB_VOLUME}
 
 .PHONY: clean
 clean: 

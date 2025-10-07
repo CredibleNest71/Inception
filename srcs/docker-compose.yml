@@ -1,37 +1,45 @@
 #version: "3.8"
-
+#ADD THIS TO GIT
 services: 
   db:
-    #image: mariadb:10.5
     build: ./requirements/mariadb
+    image: mariadb:1.0
     container_name: mariadb
     restart: unless-stopped
     env_file: .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
     volumes:
-      - db_data:/var/lib/mysql 
+      - db_data:/var/lib/mysql
     networks: 
       - inception
 
+
   wordpress:
     build: ./requirements/wordpress
+    image: wordpress:1.0
     container_name: wordpress
     restart: unless-stopped
     env_file: .env 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "pgrep php-fpm"]
       interval: 10s
-      timeout: 3s
-      retries: 5
+      timeout: 5s
+      retries: 30
     volumes:
       - wordpress_data:/var/www/html
     networks:
       - inception
 
   nginx:
-    #image: nginx:latest
     build: ./requirements/nginx
+    image: nginx:1.0
     container_name: nginx
     restart: unless-stopped
     ports:
