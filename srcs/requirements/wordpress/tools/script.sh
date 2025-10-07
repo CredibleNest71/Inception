@@ -12,7 +12,7 @@ if [ ! -f wp-config.php ]; then
         --dbname="$MYSQL_DATABASE" \
         --dbuser="$MYSQL_USER" \
         --dbpass="$MYSQL_PASSWORD" \
-        --dbhost="mariadb:3306"
+        --dbhost="$WORDPRESS_DB_HOST"
 
     echo "Installing WordPress..."
     wp core install \
@@ -24,7 +24,7 @@ if [ ! -f wp-config.php ]; then
         --admin_email="$WP_ADMIN_EMAIL"
 
     echo "Creating additional user..."
-    wp user create "$WP_USER" "$WP_USER_EMAIL" \
+    wp user create "$WP_USER_NAME" "$WP_USER_EMAIL" \
         --allow-root \
         --user_pass="$WP_USER_PASSWORD"
 fi
