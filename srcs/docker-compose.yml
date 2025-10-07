@@ -1,7 +1,7 @@
 #version: "3.8"
 #ADD THIS TO GIT
 services: 
-  db:
+  mariadb:
     build: ./requirements/mariadb
     image: mariadb:1.0
     container_name: mariadb
@@ -25,13 +25,14 @@ services:
     restart: unless-stopped
     env_file: .env 
     depends_on:
-      db:
+      mariadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9000 || exit 1"]
+      test: ["CMD-SHELL", "pgrep php-fpm7.4 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 30
+
     volumes:
       - wordpress_data:/var/www/html
     networks:

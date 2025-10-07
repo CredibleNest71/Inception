@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
-
+# Wait for DB
+until mysqladmin ping -h "$WORDPRESS_DB_HOST" --silent; do
+  echo "Waiting for DB..."
+  sleep 2
+done
 # If WordPress is not already downloaded, fetch it
 if [ ! -f wp-config.php ]; then
     echo "Downloading WordPress core..."
