@@ -1,12 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "Waiting for database..."
-until mysql -h "$WORDPRESS_DB_HOST" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT 1" &> /dev/null; do
-  echo "Database not ready..."
-  sleep 5
-done
-
 # If WordPress is not already downloaded, fetch it
 if [ ! -f wp-config.php ]; then
     echo "Downloading WordPress core..."
