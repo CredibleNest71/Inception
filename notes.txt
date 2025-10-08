@@ -1,25 +1,162 @@
-${VAR:-default} # sets default
-${VAR:?error} # throws error
 
-volumes brauchen lokale folder auf der hostmachine 
-    driver: local
-    etc ... 
-    make fclean soll löschen
-    docker compose down rmi (remove images)
+## **Docker & Docker Compose**
+
+**Check status**
+
+```bash
+docker ps              # Show running containers
+docker ps -a           # Show all containers (including stopped)
+docker images          # List images
+docker volume ls       # List volumes
+docker network ls      # List networks
+docker inspect <name>  # Inspect container, volume, or network
+```
+
+**Start/stop containers**
+
+```bash
+docker-compose up -d       # Start all containers in background
+docker-compose down        # Stop containers
+docker-compose down -v     # Stop containers and remove volumes
+docker restart <container_name>
+docker logs <container_name>       # View logs
+docker logs -f <container_name>    # Follow logs
+docker exec -it <container> bash  # Enter container shell
+docker exec -it <container> sh    # For Alpine-based containers
+```
+
+**Build images**
+
+```bash
+docker-compose build         # Build all images
+docker-compose build <service> # Build specific service
+docker build -t <name> .     # Build image manually from Dockerfile
+```
+
+**Remove**
+
+```bash
+docker rm <container>        # Remove container
+docker rmi <image>           # Remove image
+docker volume rm <volume>    # Remove specific volume
+docker system prune -a       # Remove all unused containers, images, networks
+docker volume prune -f       # Remove all unused volumes
+```
+
+---
+
+## ** Docker Networking**
+
+```bash
+docker network ls                       # List Docker networks
+docker network inspect <network_name>   # Inspect network
+docker network create <name>            # Create custom network
+docker network connect <net> <container> # Connect container to network
+```
+
+---
+
+## ** MySQL / MariaDB Commands**
+
+**Login**
+
+```bash
+docker exec -it mariadb bash
+mysql -u <user> -p               # Login inside container
+```
+
+**Database operations**
+
+```sql
+USE wordpress;
+SHOW TABLES;                       # List tables
+SELECT * FROM wp_comments;         # Show all comments
+SELECT comment_author, comment_content, comment_date FROM wp_comments; 
+SELECT ID, user_login, user_email, user_registered FROM wp_users;  # Show users
+SELECT user_id, meta_key, meta_value FROM wp_usermeta WHERE meta_key='wp_capabilities';
+SELECT * FROM wp_options LIMIT 10; # Check basic site info
+EXIT;
+```
+
+* Ensure **admin user** is present and root cannot log in without password.
+
+---
+
+## **4️⃣ WordPress / WP-CLI**
+
+**Check WordPress status**
+
+```bash
+docker exec -it wordpress bash
+wp core check-update --allow-root
+wp core status --allow-root
+```
+
+**List users**
+
+```bash
+wp user list --allow-root
+```
+
+**Add comment for testing**
+
+```bash
+wp comment create --allow-root --post_id=1 --comment_author="wpuser" --comment_content="Test comment"
+```
+
+---
+
+## **NGINX**
+
+**Check configuration**
+
+```bash
+docker exec -it nginx bash
+nginx -t               # Test NGINX config
+nginx -s reload         # Reload NGINX
+```
+
+**Access website**
+
+```bash
+curl -vk https://mresch.42.fr   # Test HTTPS (must work)
+curl -vk http://mresch.42.fr    # Test HTTP (should fail)
+```
+
+* NGINX should **only respond on port 443**.
+
+---
+
+## **Volumes & File System**
+
+**Create volumes**
+
+```bash
+sudo mkdir -p /home/mresch/data/wordpress
+sudo mkdir -p /home/mresch/data/mariadb
+ls -l /home/mresch/data/
+docker volume inspect <volume>    # Inspect volume mount
+```
+
+**Clean volumes**
+
+```bash
+sudo rm -rf /home/mresch/data/wordpress
+sudo rm -rf /home/mresch/data/mariadb
+docker-compose down -v            # Stops containers and removes volumes
+docker volume rm <volume_name>    # Remove specific volume if needed
+```
+
+* Docker volumes persist even if host folder is deleted, unless removed.
+
+---
+
+## **Environment Variables / Secrets**
+
+```bash
+cat srcs/.env                     # Check environment variables
+docker secret ls                  # List secrets
+docker secret inspect <secret>    # Inspect secret metadata
+```
 
 
-in /etc/hosts ein alias für mresch.42.fr erstellen 
-
-
-set missing variables
-
-
-
-mariadb basics:
-
-login: mariadb -u <username> -p
-
-SHOW DATABASES;
-USE <db_name>
-SHOW TABLES;
-SELECT * FROM <table_name>
